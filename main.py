@@ -1,3 +1,5 @@
+# Imports
+
 from contextlib import asynccontextmanager
 from typing import Annotated
 
@@ -19,8 +21,10 @@ from database import Base, engine, get_db
 
 from routers import posts, users
 
+#______________________________________________________________________________________________
 
 # for database creation
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     # Startup
@@ -30,8 +34,8 @@ async def lifespan(_app: FastAPI):
     # Shutdown
     await engine.dispose()
 
-
 app = FastAPI(lifespan=lifespan)
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/media", StaticFiles(directory="media"), name="media")
@@ -39,9 +43,7 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 templates = Jinja2Templates(directory="templates")
 
 # routes
-app.include_router(
-    users.router, prefix="/api/users", tags=["users"]
-)  # tags for fastapi docs organisation
+app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(posts.router, prefix="/api/posts", tags=["posts"])
 
 # html pages___________________________________________________________________________________
@@ -117,6 +119,35 @@ async def user_posts_page(
         request,
         "user_posts.html",
         {"posts": posts, "user": user, "title": f"{user.username}'s Posts"},
+    )
+
+
+
+## login and register template_routes__________________________________________________________
+
+@app.get("/login", include_in_schema=False)
+async def login_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "login.html",
+        {"title": "Login"},
+    )
+
+
+@app.get("/register", include_in_schema=False)
+async def register_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "register.html",
+        {"title": "Register"},
+    )
+
+@app.get("/account", include_in_schema=False)
+async def account_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "account.html",
+        {"title": "account"},
     )
 
 
