@@ -126,6 +126,7 @@ async def login_for_access_token(
 
 ## get_current_user____________________________________________________________
 
+
 @router.get("/me", response_model=UserPrivate)
 async def get_current_user(
     current_user: CurrentUser,
@@ -134,6 +135,7 @@ async def get_current_user(
 
 
 ## forgot_password endpoint____________________________________________________________
+
 
 @router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
 async def forgot_password(
@@ -183,6 +185,7 @@ async def forgot_password(
 
 # reset_password endpoint_______________________________________________________________
 
+
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(
     request_data: ResetPasswordRequest,
@@ -203,7 +206,7 @@ async def reset_password(
             detail="Invalid or expired reset token",
         )
 
-    if reset_token.expires_at.replace(tzinfo=UTC) < datetime.now(UTC):
+    if reset_token.expires_at < datetime.now(UTC):
         await db.delete(reset_token)
         await db.commit()
         raise HTTPException(
@@ -238,6 +241,7 @@ async def reset_password(
 
 ## change_password endpoint______________________________________________________________
 
+
 @router.patch("/me/password", status_code=status.HTTP_200_OK)
 async def change_password(
     password_data: ChangePasswordRequest,
@@ -263,6 +267,7 @@ async def change_password(
 
 
 # get a user ____________________________________________________________________________
+
 
 @router.get("/{user_id}", response_model=UserPublic)
 async def get_user(user_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
@@ -317,7 +322,6 @@ async def get_user_posts(
         limit=limit,
         has_more=has_more,
     )
-
 
 
 # update user_____________________________________________________________________________
